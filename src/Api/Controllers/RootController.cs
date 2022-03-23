@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+using Api.Infrastructure.Hateoas;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -6,28 +6,17 @@ namespace Api.Controllers;
 [ApiController]
 [Route("")]
 public class RootController : ControllerBase
-{
+{   
     [HttpGet]
-    public List<Link> Get()
+    // Problem : don't works when void / Task / Ok()
+    public object Get()
     {
-        var links = new List<Link>();
         var scheme = Request.Scheme;
-        links.Add(new Link("searches", Url.Action("PerformASearch", "Search", new{}, scheme)));
-        links.Add(new Link("bookings", Url.Action("RetrieveAnExistingBooking", "Bookings", new{}, scheme)));
-        links.Add(new Link("self", Url.Action("Get", "Root", null, scheme)));
-        links.Add(new Link("spaceports", Url.Action("GetSpacePorts", "SpacePorts", null, scheme)));
-        return links;
+        this.AddLink(new Link("searches", Url.Action("PerformASearch", "Search", null, scheme), "GET"));
+        this.AddLink(new Link("bookings", Url.Action("RetrieveAnExistingBooking", "Bookings", null, scheme), "GET"));
+        this.AddLink(new Link("self", Url.Action("Get", "Root", null, scheme), "GET"));
+        this.AddLink(new Link("spaceports", Url.Action("GetSpacePorts", "SpacePorts", null, scheme), "GET"));
+        return new Object();
     }
 
-    public class Link
-    {
-        public string Name { get; init; }
-        public string Href { get; init; }
-
-        public Link(string name, string href)
-        {
-            Name = name;
-            Href = href;
-        }
-    }
 }
